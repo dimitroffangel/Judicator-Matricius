@@ -7,7 +7,28 @@ const int MAX_NUMBER_OF_ROWS = 42;
 const double ERROR_BOUND = 1e-9;
 const int WRONG_ANSWER_CODE = 2; // it doesn't actually have to be infinity or a big number
 
-int DoGaussElimination(std::vector<std::vector<double> > matrix, std::vector<double>& answer)
+struct GaussEliminationAnswer
+{
+	GaussEliminationAnswer()
+	{
+		std::cout << "GaussEliminationAnswer() ctor..." << '\n';
+	}
+
+	GaussEliminationAnswer(const GaussEliminationAnswer& rhs)
+	{
+		std::cout << "GaussEliminationAnswer() copy ctor..." << '\n';
+	}
+
+	GaussEliminationAnswer(const GaussEliminationAnswer&& rhs)
+	{
+		std::cout << "GaussEliminationAnswer() move ctor..." << '\n';
+	}
+
+	int stateAfterElimination = 1;
+	std::vector<std::vector<double>> matrix;
+};
+
+GaussEliminationAnswer&& DoGaussElimination(std::vector<std::vector<double> > matrix, std::vector<double>& answer)
 {
 	const int numberOfRows = matrix.size();
 	const int numberOfCols = matrix[0].size() - 1;
@@ -96,7 +117,10 @@ int DoGaussElimination(std::vector<std::vector<double> > matrix, std::vector<dou
 
 		if (std::abs(sum - matrix[i][numberOfCols]) > ERROR_BOUND)
 		{
-			return 0;
+			GaussEliminationAnswer stateAnswer;
+			stateAnswer.stateAfterElimination = 0;
+			stateAnswer.matrix = std::move(matrix);
+			return std::move(stateAnswer);
 		}
 	}
 
@@ -104,11 +128,17 @@ int DoGaussElimination(std::vector<std::vector<double> > matrix, std::vector<dou
 	{
 		if (answer[i] == 1 && !foundAnswers[i])
 		{
-			return WRONG_ANSWER_CODE;
+			GaussEliminationAnswer stateAnswer;
+			stateAnswer.stateAfterElimination = WRONG_ANSWER_CODE;
+			
+			stateAnswer.matrix = std::move(matrix);
+			return std::move(stateAnswer);
 		}
 	}
 
-	return 1;
+	GaussEliminationAnswer stateAnswer;
+	stateAnswer.matrix = std::move(matrix);
+	return std::move(stateAnswer);
 }
 
 int main()
@@ -137,7 +167,7 @@ int main()
 	}
 
 	std::vector<double> answer;
-	int res = DoGaussElimination(matrix, answer);
+	GaussEliminationAnswer&& res = std::move(DoGaussElimination(matrix, answer));
 
 	return 0;
 }
