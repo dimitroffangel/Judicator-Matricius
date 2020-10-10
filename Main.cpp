@@ -6,7 +6,8 @@
 const int MAX_NUMBER_OF_ROWS = 42;
 
 const double ERROR_BOUND = 1e-9;
-const int WRONG_ANSWER_CODE = 2; // it doesn't actually have to be infinity or a big number
+const char NO_ANSWER_CODE = 0;
+const char MULTIPLE_ANSWER_CODE = 2;
 
 struct GaussEliminationAnswer
 {
@@ -103,8 +104,6 @@ GaussEliminationAnswer&& DoGaussElimination(std::vector<std::vector<double> > ma
 			}
 
 			answer[i] = (matrix[pivotIndices[i]][numberOfCols] - sum) / matrix[pivotIndices[i]][i];
-
-
 		}
 	}
 
@@ -121,7 +120,7 @@ GaussEliminationAnswer&& DoGaussElimination(std::vector<std::vector<double> > ma
 		if (std::abs(sum - matrix[i][numberOfCols]) > ERROR_BOUND)
 		{
 			GaussEliminationAnswer stateAnswer;
-			stateAnswer.stateAfterElimination = 0;
+			stateAnswer.stateAfterElimination = NO_ANSWER_CODE;
 			stateAnswer.matrix = std::move(matrix);
 			return std::move(stateAnswer);
 		}
@@ -132,7 +131,7 @@ GaussEliminationAnswer&& DoGaussElimination(std::vector<std::vector<double> > ma
 		if (answer[i] == 1 && !foundAnswers[i])
 		{
 			GaussEliminationAnswer stateAnswer;
-			stateAnswer.stateAfterElimination = WRONG_ANSWER_CODE;
+			stateAnswer.stateAfterElimination = MULTIPLE_ANSWER_CODE;
 			
 			stateAnswer.matrix = std::move(matrix);
 			return std::move(stateAnswer);
