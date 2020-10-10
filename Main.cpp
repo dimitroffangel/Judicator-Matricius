@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <bitset>
+#include <cassert>
 
 const int MAX_NUMBER_OF_ROWS = 42;
 
@@ -79,6 +80,8 @@ GaussEliminationAnswer&& DoGaussElimination(std::vector<std::vector<double> > ma
 		++row;
 	}
 
+	assert(answer.size() == 0);
+
 	answer.assign(numberOfCols, 1);
 	std::bitset<MAX_NUMBER_OF_ROWS> foundAnswers;
 
@@ -139,6 +142,12 @@ GaussEliminationAnswer&& DoGaussElimination(std::vector<std::vector<double> > ma
 	GaussEliminationAnswer stateAnswer;
 	stateAnswer.matrix = std::move(matrix);
 	return std::move(stateAnswer);
+}
+
+void FindMoreAnswers(const std::vector<double>& matrix, std::vector<std::vector<double>>& answers,
+	const std::vector<double> valuesToCheck)
+{
+
 }
 
 int main()
